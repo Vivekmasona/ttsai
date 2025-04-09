@@ -19,6 +19,50 @@ function downloadFile(url, outputPath) {
   });
 }
 
+// Default route - Plays predefined TTS
+app.get('/', async (req, res) => {
+  const text = 'Namaste, main Sany Leon AI hoon. Mujhe Vivek Maurya ne banaya hai.';
+  const lang = 'hi-IN';
+
+  const ttsPath = path.join(__dirname, 'intro.mp3');
+  const voiceFxPath = path.join(__dirname, 'introfx.mp3');
+
+  try {
+    const url = gTTS.getAudioUrl(text, {
+      lang,
+      slow: false,
+      host: 'https://translate.google.com',
+    });
+
+    await downloadFile(url, ttsPath);
+
+    await new Promise((resolve, reject) => {
+      ffmpeg(ttsPath)
+        .audioFilters([
+          'asetrate=44100*0.77',
+          'atempo=0.88',
+          'aecho=0.6:0.8:40:0.22'
+        ])
+        .audioBitrate(192)
+        .save(voiceFxPath)
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+    const stream = fs.createReadStream(voiceFxPath);
+    stream.pipe(res);
+    stream.on('end', () => {
+      [ttsPath, voiceFxPath].forEach(p => fs.existsSync(p) && fs.unlinkSync(p));
+    });
+
+  } catch (err) {
+    console.error('Error:', err.message);
+    res.status(500).send('Intro TTS failed');
+  }
+});
+
+// Custom TTS route
 app.get('/tts', async (req, res) => {
   const text = req.query.text || 'Main tumse bahut pyaar karti hoon!';
   const lang = req.query.lang || 'hi-IN';
@@ -35,13 +79,12 @@ app.get('/tts', async (req, res) => {
 
     await downloadFile(url, ttsPath);
 
-    // Apply pitch shift (chipmunk effect) + tempo + echo
     await new Promise((resolve, reject) => {
       ffmpeg(ttsPath)
         .audioFilters([
-          'asetrate=44100*0.77', // increase pitch
-          'atempo=0.88',         // slightly faster tempo
-          'aecho=0.6:0.8:40:0.22' // soft echo
+          'asetrate=44100*0.77',
+          'atempo=0.88',
+          'aecho=0.6:0.8:40:0.22'
         ])
         .audioBitrate(192)
         .save(voiceFxPath)
@@ -60,5 +103,6 @@ app.get('/tts', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/tts?text=Main+tumse+pyaar+karti+hoon`);
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Try: http://localhost:${PORT}/tts?text=Main+tumse+pyaar+karti+hoon`);
 });
