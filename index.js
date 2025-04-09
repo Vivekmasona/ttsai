@@ -21,7 +21,7 @@ function downloadFile(url, outputPath) {
 
 // Default route - Plays predefined TTS
 app.get('/', async (req, res) => {
-  const text = 'Namaste, main Sany Leon AI hoon. Mujhe Vivek Maurya ne banaya hai.';
+  const text = 'Namaste, main vfy AI hoon. Mujhe Vivek masonawale ne banaya hai.';
   const lang = 'hi-IN';
 
   const ttsPath = path.join(__dirname, 'intro.mp3');
@@ -64,7 +64,7 @@ app.get('/', async (req, res) => {
 
 // Custom TTS route
 app.get('/tts', async (req, res) => {
-  const text = req.query.text || 'Main tumse bahut pyaar karti hoon!';
+  const text = req.query.text || 'Thanks for using, मैं जानती हूँ कि मेरी आवाज़ अभी उतनी नैचुरल नहीं है, लेकिन भविष्य में इसे सही किया जाएगा। अभी इस पर! काम चल रहा है ';
   const lang = req.query.lang || 'hi-IN';
 
   const ttsPath = path.join(__dirname, 'input.mp3');
@@ -92,7 +92,7 @@ app.get('/tts', async (req, res) => {
         .on('error', reject);
     });
 
-    res.download(voiceFxPath, 'cute-girl-tts.mp3', () => {
+    res.download(voiceFxPath, 'vfy-ai-tts.mp3', () => {
       [ttsPath, voiceFxPath].forEach(p => fs.existsSync(p) && fs.unlinkSync(p));
     });
 
