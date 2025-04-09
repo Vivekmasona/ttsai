@@ -19,6 +19,15 @@ function downloadFile(url, outputPath) {
   });
 }
 
+const voiceFilters = [
+  'asetrate=44100*0.66',
+  'atempo=1.10',
+  'bass=g=20',
+  'aecho=0.8:0.88:60:0.22',
+  'equalizer=f=100:width_type=h:width=200:g=8',
+  'dynaudnorm=p=0.9'
+];
+
 // Default route - Plays predefined TTS
 app.get('/', async (req, res) => {
   const text = 'Namaste, main vfy AI hoon. Mujhe Vivek masonawale ne banaya hai.';
@@ -38,11 +47,7 @@ app.get('/', async (req, res) => {
 
     await new Promise((resolve, reject) => {
       ffmpeg(ttsPath)
-        .audioFilters([
-          'asetrate=44100*0.77',
-          'atempo=0.88',
-          'aecho=0.6:0.8:40:0.22'
-        ])
+        .audioFilters(voiceFilters)
         .audioBitrate(192)
         .save(voiceFxPath)
         .on('end', resolve)
@@ -81,11 +86,7 @@ app.get('/tts', async (req, res) => {
 
     await new Promise((resolve, reject) => {
       ffmpeg(ttsPath)
-        .audioFilters([
-          'asetrate=44100*0.77',
-          'atempo=0.88',
-          'aecho=0.6:0.8:40:0.22'
-        ])
+        .audioFilters(voiceFilters)
         .audioBitrate(192)
         .save(voiceFxPath)
         .on('end', resolve)
