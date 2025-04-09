@@ -44,9 +44,9 @@ app.get('/tts', async (req, res) => {
     await new Promise((resolve, reject) => {
       ffmpeg(ttsPath)
         .audioFilters([
-          'asetrate=44100*1.2', // increase pitch
-          'atempo=1.1',         // slightly faster tempo
-          'aecho=0.6:0.8:40:0.2' // soft echo
+          'asetrate=44100*0.7', // increase pitch
+          'atempo=0.9',         // slightly faster tempo
+          'aecho=0.6:0.8:40:0.3' // soft echo
         ])
         .audioBitrate(192)
         .save(voiceFxPath)
